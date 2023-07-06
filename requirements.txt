@@ -1,0 +1,10 @@
+gepia==0.3
+numpy==1.23.5
+opencv_python==4.7.0.72
+pandas==1.5.3
+PyPDF2==3.0.1
+selenium==4.10.0
+lxml==4.9.2
+html5lib==1.1
+xlrd==2.0.1
+openpyxl==3.1.1
