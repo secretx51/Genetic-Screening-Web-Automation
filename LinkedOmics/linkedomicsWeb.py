@@ -13,12 +13,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 #DIRECTORIES
 MAIN_DIR = os.getcwd()
+DOWNLOADS = MAIN_DIR + "/downloads"
+DOWNLOAD_DIR = str(Path.home() / "Downloads") 
 ERROR = 5
 
 def linkedOmics(gene):
     options = webdriver.ChromeOptions()
-    downloads = str(Path.home() / "Downloads")
-    options.add_argument(f"download.default_directory={downloads}") # Set the download Path
+    options.add_argument(f"download.default_directory={DOWNLOAD_DIR}") # Set the download Path
     driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, timeout=600)
     driver.set_page_load_timeout(600)
@@ -172,7 +173,7 @@ def mse(img1, img2):
     return mse
 
 def filterData(gene, terms):
-    df = pd.read_csv(f"{MAIN_DIR}/downloads/{gene}.csv")
+    df = pd.read_csv(f"{DOWNLOADS}/{gene}.csv")
     columns_to_remove = [0,3,4,5,7] # List of column indices to remove
     df = df.drop(df.columns[columns_to_remove], axis=1) # Remove the specified columns
     df["Gene"] = gene
@@ -196,8 +197,12 @@ def writeErrors(errors: list):
                 file.write(f'{error},')
     file.close()
 
+def createDownloadsDir():
+    if not os.path.exists(DOWNLOADS):
+        os.makedirs(DOWNLOADS)    
+
 def checkFileExists(filename):
-    return filename in os.listdir(f"{MAIN_DIR}/downloads")
+    return filename in os.listdir(DOWNLOADS)
 
 def queryData(genes):
     errors = []
@@ -206,7 +211,7 @@ def queryData(genes):
             if checkFileExists(f"{gene}.csv"):
                     continue
             df = linkedOmics(gene) #obtain db webpage
-            df.to_csv(f"{MAIN_DIR}/downloads/{gene}.csv")
+            df.to_csv(f"{DOWNLOADS}/{gene}.csv")
             print(f"{gene} success query")
         except Exception as error:
             errors.append(gene)

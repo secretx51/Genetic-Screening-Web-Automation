@@ -1,25 +1,30 @@
 import os
 import pandas as pd
+from pathlib import Path
 from tideFormat import *
 from tideQuery import RegisterTide
 from tideQuery import QueryTide
 
-#DIRECTORIES
-DOWNLOAD_DIR = "/Users/trent/Downloads" #This is the downloads folder of comuter
-DOWNLOADS = "/Users/trent/Developer/tide/downloads" #This is where you want the unfiltered csv stored
-MAIN_DIR = "/Users/trent/Developer/tide" #This is the directory where the python file is located
-
+#DIRECTORIES - DO NOT CHANGE
+MAIN_DIR = os.getcwd()
+DOWNLOADS = MAIN_DIR + "/downloads" 
+DOWNLOAD_DIR = str(Path.home() / "Downloads") 
+# CHANGEME for different dataset filtering
 COLUMNS = ['Gene', "GSE26712@PRECOG", "GSE13876@PRECOG", "GSE3149@PRECOG", 
             "GSE9899@PRECOG", "GSE17260@PRECOG", 
             "GSE17260", "GSE49997", "GSE32062", "GSE26712", 
             'TCGA1', 'TCGA2','CAF FAP', 'MDSC', 'TAM M2']
+
+def createDownloadsDir():
+    if not os.path.exists(DOWNLOADS):
+        os.makedirs(DOWNLOADS)    
 
 def checkFileExists(filename):
     return filename in os.listdir(DOWNLOADS)
 
 def renameFile(gene, exclusion):
     exclusion_str = "_exclusion" if exclusion else ""
-    old_name = f"{DOWNLOAD_DIR}/{gene + exclusion_str}.csv"
+    old_name = f"{DOWNLOADS}/{gene + exclusion_str}.csv"
     new_name = f"{DOWNLOADS}/{gene + exclusion_str}.csv"
     os.rename(old_name, new_name)
 
@@ -78,6 +83,7 @@ def combineDownloads(genes):
 def main():
     genes = importFile(f"{MAIN_DIR}/tideGenes.txt")
     errors = [] #define errors so can combine downloads without querying and won't error
+    createDownloadsDir()
     errors = queryData(genes)
     errors.extend(combineDownloads(genes))
     writeErrors(errors)
