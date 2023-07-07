@@ -120,14 +120,17 @@ General guide to running each tool:
    ```sh
    python toolnameMain.py
    ```
+<br />
   
 
 ### Gepia
 
 Gets survival data from Gepia for all the comma separated genes in 'gepiaGenes.txt'. Gepia is the only one of the online web automation tools that doesn't use selenium to parse webpages. This is because Gepia has a public python API that the program uses to generated the data. It generates the output in the form of pdf files that have an image of the survival plot. It then extracts all the text from the pdf files and filters for HR(high) and logranks which it stores in a csv alongside the respective gene name. <br />
-Before running Gepia open the gepiaAnalysis.py file and update the OUTPUT_DIR constant at beginning of file to delineate where you want the pdf files stored. <br />
+Before running Gepia open the gepiaAnalysis.py file and update the OUTPUT_DIR constant at beginning of file to delineate where you want the pdf files stored. 
+<br /><br />
 
 ### LinkedOmics
+
 Does a pearson corelation test using rna seq data as search and target dataset in the TCGA_OV database for each comma separated genes in 'linkedomicsGenes.txt'. Conducts a linked-interpreter analysis using Gene Set Enrichment Analysis (GSEA) using the gene ontology enrichment analysis, ranking with FDR, min samples of 3 and 500 simulations. Uses selenium web automation to enter all parameters into the website and downloads the table from page source. The tool then filters this table for the FDR and P-values of immunological pathways determined by gene ontology terms. <br />
 To change the gene ontology terms do the follow:
 1. Update the 'GO_search_terms.txt' do include a list of terms you want to get gene ontology tags for.
@@ -140,14 +143,29 @@ To change the gene ontology terms do the follow:
    python getGoTerms.py
    ```
 The terms will then be added to the output_GO_terms.txt file that LinkedOmics uses to filter for desired pathways.
+<br /><br />
 
 ### NCBI
-This is the only tool that does not require 
+
+This library contains 2 tools 'filterGenome.py' and 'geneSplitter.py'. filterGenome.py is designed to find genes from the human genome that you would like to run further testing on through the other tools. filterGenome.py does not search  the web through selenium or Gepia API request, instead it uses data from the 'NCBI/gene/gene_info/Homo_sapiens'.gene_info. This file is updated daily by NCBI the current version in use is from 05/07/2023. To use filter genome enter the prefixes of genes you desire into the 'genomeSearchTerms.txt' file in a comma delineated format. For example entering MIR,LET into the format would return all the microRNA genes from the human genome. <br /><br />
+
+geneSplitter.py is located in /vm_tools and is designed to split a comma separated list of genes into multiple files. It is reserved for advanced users only that would like to run multiple of instances of selenium at once through containers/vms. To use it you must edit the python file with input directory of file, output directory for split files and project name to names the files.
+<br /><br />
+
 
 ### Tide
 
-### Timer
+Downloads the expression and exclusion tables from the Tide query gene tool using python selenium. It then filters these tools for ovarian and ovary patients and subsets for the datasets of interest. It reports the T_Dysfunction value for each dataset. 
+The default datasets are: <br />
+Ovarian expression: "GSE26712@PRECOG", "GSE13876@PRECOG", "GSE3149@PRECOG", "GSE9899@PRECOG", "GSE17260@PRECOG" and
+TCGA that is split into arbitrary "TCGA1" and "TCGA2" <br />
+Ovary Expression: "GSE17260", "GSE49997", "GSE32062", "GSE26712" <br />
+Exclusion: 'CAF FAP', 'MDSC', 'TAM M2' <br />
+These datasets can be changed by entering the exact name of desired dataset into the COLUMNS constant at top of tideMain.py file.
+<br /><br />
 
+### Timer
+Tool working, description in progress.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -163,7 +181,8 @@ This is the only tool that does not require
 - [ ] Allow to be used with other cancer types apart from ovarian
     - [ ] Allow alternate parameter input by user
     - [ ] Implement Parser
-    - [ ] Potential to implement simple UI
+- [ ] Dockerise
+    - [ ] Potential to implement simple web UI
 
 See the [open issues](https://github.com/secretx51/Genetic-Screening-Web-Automation/issues) for a full list of proposed features (and known issues).
 
