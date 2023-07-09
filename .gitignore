@@ -6,6 +6,11 @@ __pycache__/
 #Mac DS
 .DS_Store
 
+#Output Files
+tide_output_formatted.csv
+tide_output.csv
+tideErrors.txt
+
 # C extensions
 *.so
 
