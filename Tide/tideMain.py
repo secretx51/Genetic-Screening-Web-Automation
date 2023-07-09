@@ -1,4 +1,5 @@
 import os
+import shutil
 import pandas as pd
 from pathlib import Path
 from tideFormat import *
@@ -26,7 +27,7 @@ def renameFile(gene, exclusion):
     exclusion_str = "_exclusion" if exclusion else ""
     old_name = f"{DOWNLOADS}/{gene + exclusion_str}.csv"
     new_name = f"{DOWNLOADS}/{gene + exclusion_str}.csv"
-    os.rename(old_name, new_name)
+    shutil.move(old_name, new_name)
 
 def importFile(filename):
     with open(filename, 'r') as file:
