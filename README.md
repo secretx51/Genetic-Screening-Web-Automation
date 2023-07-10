@@ -68,7 +68,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Modern bioinformatic genetic screening requires the use of many online web tools for the analysis of genes. This project includes the following web tools: Gepia, LinkedDomics, Tide and Timer. This project allows for fast horizontal analysis, via automating the input of genes into these online web-tools with python selenium.
+Modern bioinformatic genetic screening requires the use of many online web tools for the analysis of genes. This project includes the following web tools: Gepia, LinkedOmics, Tide and Timer. This project allows for fast horizontal analysis, via automating the input of genes into these online web-tools with python selenium.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -103,7 +103,6 @@ Example install python 3.10 with conda below:
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
 <!-- USAGE EXAMPLES -->
 ## Usage
 
@@ -120,14 +119,15 @@ General guide to running each tool:
    ```sh
    python toolnameMain.py
    ```
-<br />
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
   
 
 ### Gepia
 
 Gets survival data from Gepia for all the comma separated genes in 'gepiaGenes.txt'. Gepia is the only one of the online web automation tools that doesn't use selenium to parse webpages. This is because Gepia has a public python API that the program uses to generated the data. It generates the output in the form of pdf files that have an image of the survival plot. It then extracts all the text from the pdf files and filters for HR(high) and logranks which it stores in a csv alongside the respective gene name. <br />
 Before running Gepia open the gepiaAnalysis.py file and update the OUTPUT_DIR constant at beginning of file to delineate where you want the pdf files stored. 
-<br /><br />
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### LinkedOmics
 
@@ -143,29 +143,33 @@ To change the gene ontology terms do the follow:
    python getGoTerms.py
    ```
 The terms will then be added to the output_GO_terms.txt file that LinkedOmics uses to filter for desired pathways.
-<br /><br />
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### NCBI
 
 This library contains 2 tools 'filterGenome.py' and 'geneSplitter.py'. filterGenome.py is designed to find genes from the human genome that you would like to run further testing on through the other tools. filterGenome.py does not search  the web through selenium or Gepia API request, instead it uses data from the 'NCBI/gene/gene_info/Homo_sapiens'.gene_info. This file is updated daily by NCBI the current version in use is from 05/07/2023. To use filter genome enter the prefixes of genes you desire into the 'genomeSearchTerms.txt' file in a comma delineated format. For example entering MIR,LET into the format would return all the microRNA genes from the human genome. <br /><br />
 
 geneSplitter.py is located in /vm_tools and is designed to split a comma separated list of genes into multiple files. It is reserved for advanced users only that would like to run multiple of instances of selenium at once through containers/vms. To use it you must edit the python file with input directory of file, output directory for split files and project name to names the files.
-<br /><br />
+<br />
+formatMicroRNA.py is also locate in /vm_tools and is designed to format miRNA gene names as to work better with most miRNA databases including linkedOmics. Only used this miRNA gene names and nothing else. To use it you must edit the python file with input directory of file and output directory for the formatted gene names.
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Tide
 
-Downloads the expression and exclusion tables from the Tide query gene tool using python selenium. It then filters these tools for ovarian and ovary patients and subsets for the datasets of interest. It reports the T_Dysfunction value for each dataset. 
+Downloads the expression and exclusion tables from the Tide query gene tool using python selenium. It then filters these tools for ovarian and ovary patients and subsets for the datasets of interest. It reports the T_Dysfunction value for each dataset. <br />
 The default datasets are: <br />
 Ovarian expression: "GSE26712@PRECOG", "GSE13876@PRECOG", "GSE3149@PRECOG", "GSE9899@PRECOG", "GSE17260@PRECOG" and
 TCGA that is split into arbitrary "TCGA1" and "TCGA2" <br />
 Ovary Expression: "GSE17260", "GSE49997", "GSE32062", "GSE26712" <br />
 Exclusion: 'CAF FAP', 'MDSC', 'TAM M2' <br />
 These datasets can be changed by entering the exact name of desired dataset into the COLUMNS constant at top of tideMain.py file.
-<br /><br />
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### Timer
-Tool working, description in progress.
+Enters comma separated list of genes into 'timerGenes.txt'. The genes from this file are entered into Timer 2.0 gene section which allows for the correlation and expression of CD8+ T cell immune infiltration level in ovarian cancer.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -177,7 +181,7 @@ Tool working, description in progress.
 - [x] Classify Tide and Gepia
 - [x] Restructure folder directory and file naming
 - [ ] Remove need for user to edit files by auto-directory detection
-- [ ] Classify LinkedOmics and add mkdir download directory 
+- [ ] Refactor LinkedOmics and add mkdir download directory 
 - [ ] Allow to be used with other cancer types apart from ovarian
     - [ ] Allow alternate parameter input by user
     - [ ] Implement Parser
