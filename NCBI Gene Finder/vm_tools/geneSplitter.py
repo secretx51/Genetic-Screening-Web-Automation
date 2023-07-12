@@ -1,7 +1,7 @@
 import numpy as np
 
-INPUT_FILE = "~/Developer/tide/tideErrors.txt"
-OUT_DIR = "~/Developer/ncbi/genes/splits/failed microRNA"
+INPUT_FILE = "/Users/trent/Developer/ncbi/output/microRNAs_formatted.csv"
+OUT_DIR = "/Users/trent/Developer/ncbi/genes/splits/linkedOmics miRNA"
 PROJ_NAME = "microRNA"
 PARTS = 5 #Number of parts to split csv into
 

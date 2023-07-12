@@ -1,18 +1,18 @@
 import os
 import PyPDF2
+import argparse
 import gepia as gp
 import pandas as pd
 
-#CHANGE THIS TO LOCATION WHERE WANT TO STORE PDF FILES
-OUTPUT_DIR = "/Users/trent/Developer/gepia/results/microRNA/" #Main dir
 # DO NOT CHANGE MAIN_DIR
 MAIN_DIR = os.getcwd()
 
 class Gepia():
-    def __init__(self, input_filename: str, output_dir: str, survival: gp.survival):
-        self._survival = survival
+    def __init__(self, input_filename: str, output_dir: str, cancer: str):
+        self._cancer = cancer
         self._input_filename = input_filename
         self._output_dir = output_dir
+        self._survival = gp.survival()
 
     def _importFile(self, filename):
         with open(filename, 'r') as file:
@@ -22,9 +22,14 @@ class Gepia():
         # Print the list of strings
         file.close()
         return string_list
+    
+    def _createDownloadsDir(self):
+        default_path = f"{MAIN_DIR}/results"
+        if self._output_dir == default_path and not os.path.exists(default_path):
+            os.makedirs(f"{MAIN_DIR}/results")    
 
     def _setParams(self, survival):
-        survival.setParam('dataset',['OV'])
+        survival.setParam('dataset',[self._cancer])
         survival.setParam('groupcutoff1', 75)
         survival.setParam('groupcutoff2', 25)
         survival.setOutDir(self._output_dir)
@@ -53,6 +58,7 @@ class Gepia():
         self._writeErrors(errors)
 
     def generatePDFs(self):
+        self._createDownloadsDir()
         gene_names = self._importFile(self._input_filename)
         self._loopQuery(self._survival, gene_names)
         self._getErrors(gene_names)
@@ -80,7 +86,7 @@ class PDFExtractor():
     def iteratePDF(self):
         files = os.listdir(self._directory)
         for filename in files:
-            text = self._extract_text_from_pdf(OUTPUT_DIR + filename)
+            text = self._extract_text_from_pdf(self._directory + filename)
             self._writeText(text)
             
 class TextExtract():
@@ -96,17 +102,17 @@ class TextExtract():
     def _filterText(self, lines):
         values = []
         for line in lines:
-            if "MonthsPercent" in line:
+            if "MonthsPercent" in line: #Get gene
                 words = line.split(' ')
                 values.append(words[2]) 
-            if "HR(high)" in line:
+            elif "HR(high)" in line:
                 HRs = line.split('=')
                 HRs = HRs[1].split("\n")
                 try:
                     values.append(float(HRs[0]))
                 except:
                     values.append(HRs[0]) 
-            if "Logrank" in line:
+            elif "Logrank" in line:
                 Logs = line.split('=')
                 Logs = Logs[1].split("\n")
                 try:
@@ -122,11 +128,23 @@ class TextExtract():
         df = pd.DataFrame(lists_of_3 ,columns=['Gene', 'HR', 'LogRank'])
         df.to_csv(self._output_genes, index=False)
 
+def argParser():
+    parser = argparse.ArgumentParser(description='Gets Logrank and HR(high) from Gepia survival data')
+
+    parser.add_argument("-o", "--outdir", default=f"{MAIN_DIR}/output", 
+                        help=f"Directory to where pdf graphs should be stored. Default is {MAIN_DIR}/output.")
+    parser.add_argument("-c", "--cancer", choices=gp.CANCERType, default='OV', 
+                        help="Cancer type to run Gepia on. Default is 'OV'.")
+    
+    return parser.parse_args()
+
 def main():
     input_genes = f"{MAIN_DIR}/gepiaGenes.txt"
     output_genes = f"{MAIN_DIR}/gepia_output.csv"
-    Gepia(input_genes, OUTPUT_DIR, gp.survival()).generatePDFs()
-    PDFExtractor(OUTPUT_DIR).iteratePDF()
+    parser = argParser() #Namespace
+
+    Gepia(input_genes, parser.outdir, parser.cancer).generatePDFs()
+    PDFExtractor(parser.outdir).iteratePDF()
     TextExtract(output_genes).outputText()
 
 if __name__ == "__main__":

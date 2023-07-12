@@ -90,12 +90,15 @@ Example install python 3.10 with conda below:
   ```
 
 ### Installation
-
-1. Clone the repo to directory of your choice
+1. Install git - WINDOWS only
+   ```sh
+   winget install --id Git.Git -e --source winget
+   ```
+2. Clone the repo to directory of your choice
    ```sh
    git clone https://github.com/secretx51/Genetic-Screening-Web-Automation.git
    ```
-2. Install required python packages using pip at cloned directory.
+3. Install required python packages using pip at cloned directory.
    ```sh
    pip install -r requirements.txt
    ```
@@ -125,7 +128,24 @@ General guide to running each tool:
 ### Gepia
 
 Gets survival data from Gepia for all the comma separated genes in 'gepiaGenes.txt'. Gepia is the only one of the online web automation tools that doesn't use selenium to parse webpages. This is because Gepia has a public python API that the program uses to generated the data. It generates the output in the form of pdf files that have an image of the survival plot. It then extracts all the text from the pdf files and filters for HR(high) and logranks which it stores in a csv alongside the respective gene name. <br />
-Before running Gepia open the gepiaAnalysis.py file and update the OUTPUT_DIR constant at beginning of file to delineate where you want the pdf files stored. 
+  ```sh
+  Gets Logrank and HR(high) from Gepia survival data
+  options:
+    -h, --help            show this help message and exit
+
+    -o, --outdir          Directory to where pdf graphs should be stored. 
+                          Default is: /python-file-directory/output
+
+    -c , --cancer         Cancer type to run Gepia on. 
+                          Default is: 'OV'.
+                          Choices are: ACC,BLCA,BRCA,CESC,CHOL,COAD,DLBC,ESCA,GBM,HNSC,KICH,KIRC,KIRP,
+                          LAML,LGG,LIHC,LUAD,LUSC,MESO,OV,PAAD,PCPG,PRAD,READ,SARC,SKCM,STAD,TGCT,THCA,
+                          THYM,UCEC,UCS
+  ```
+Example to run python script with directory changed and BRCA cancer type:
+  ```sh
+  python tideMain.py -o /Users/myUser/Developer/gepia/results -c BRCA
+  ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -180,7 +200,7 @@ Enters comma separated list of genes into 'timerGenes.txt'. The genes from this 
 
 - [x] Classify Tide and Gepia
 - [x] Restructure folder directory and file naming
-- [ ] Remove need for user to edit files by auto-directory detection
+- [x] Remove need for user to edit files by auto-directory detection
 - [ ] Refactor LinkedOmics and add mkdir download directory 
 - [ ] Allow to be used with other cancer types apart from ovarian
     - [ ] Allow alternate parameter input by user
