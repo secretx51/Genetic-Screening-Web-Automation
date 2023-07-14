@@ -26,7 +26,7 @@ def checkFileExists(filename):
 
 def renameFile(gene, exclusion):
     exclusion_str = "_exclusion" if exclusion else ""
-    old_name = f"{DOWNLOADS}/{gene + exclusion_str}.csv"
+    old_name = f"{DOWNLOAD_DIR}/{gene + exclusion_str}.csv"
     new_name = f"{DOWNLOADS}/{gene + exclusion_str}.csv"
     shutil.move(old_name, new_name)
 

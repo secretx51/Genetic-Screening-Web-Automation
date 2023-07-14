@@ -184,7 +184,7 @@ Ovarian expression: "GSE26712@PRECOG", "GSE13876@PRECOG", "GSE3149@PRECOG", "GSE
 TCGA that is split into arbitrary "TCGA1" and "TCGA2" <br />
 Ovary Expression: "GSE17260", "GSE49997", "GSE32062", "GSE26712" <br />
 Exclusion: 'CAF FAP', 'MDSC', 'TAM M2' <br />
-These datasets can be changed by entering the exact name of desired dataset into the COLUMNS constant at top of tideMain.py file.
+These datasets can be changed by entering the exact name of desired dataset in a comma separated fashion into the text file 'tideCohorts.txt'.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -201,7 +201,7 @@ Enters comma separated list of genes into 'timerGenes.txt'. The genes from this 
 - [x] Classify Tide and Gepia
 - [x] Restructure folder directory and file naming
 - [x] Remove need for user to edit files by auto-directory detection
-- [ ] Refactor LinkedOmics and add mkdir download directory 
+- [ ] Refactor LinkedOmics and Timer
 - [ ] Allow to be used with other cancer types apart from ovarian
     - [ ] Allow alternate parameter input by user
     - [ ] Implement Parser
