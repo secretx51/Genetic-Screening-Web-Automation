@@ -8,7 +8,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.keys import Keys
 
 #DIRECTORIES
-MAIN_DIR = os.path.dirname(os.path.realpath(__file__))
+MAIN_DIR = str(Path(__file__).resolve().parent)
 DOWNLOADS = MAIN_DIR + "/downloads" 
 DOWNLOAD_DIR = str(Path.home() / "Downloads") 
 

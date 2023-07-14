@@ -12,7 +12,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 #DIRECTORIES
-MAIN_DIR = os.path.dirname(os.path.realpath(__file__))
+MAIN_DIR = str(Path(__file__).resolve().parent)
 DOWNLOADS = MAIN_DIR + "/downloads" 
 DOWNLOAD_DIR = str(Path.home() / "Downloads") 
 ERROR = 5

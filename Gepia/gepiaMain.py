@@ -3,9 +3,10 @@ import PyPDF2
 import argparse
 import gepia as gp
 import pandas as pd
+from pathlib import Path
 
 # DO NOT CHANGE MAIN_DIR
-MAIN_DIR = os.path.dirname(os.path.realpath(__file__))
+MAIN_DIR = str(Path(__file__).resolve().parent)
 
 class Gepia():
     def __init__(self, input_filename: str, output_dir: str, cancer: str):
