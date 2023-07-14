@@ -1,15 +1,16 @@
 import os
 import time
 import pandas as pd
+from pathlib import Path
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.keys import Keys
 
 #DIRECTORIES
-DOWNLOAD_DIR = "/Users/trent/Downloads"
-DOWNLOADS = "/Users/trent/Developer/timer/downloads"
-MAIN_DIR = "/Users/trent/Developer/timer"
+MAIN_DIR = os.path.dirname(os.path.realpath(__file__))
+DOWNLOADS = MAIN_DIR + "/downloads" 
+DOWNLOAD_DIR = str(Path.home() / "Downloads") 
 
 def timer(gene):
     options = webdriver.ChromeOptions()
@@ -71,14 +72,18 @@ def importFile(filename):
     return string_list
 
 def writeErrors(errors: list):
-    with open('/Users/trent/Developer/timer/timerErrors.txt', 'w') as file:
+    with open(f"{MAIN_DIR}/timerErrors.txt", 'w') as file:
             file.truncate(0)
             for error in errors:
                 file.write(f'{error},')
     file.close()
 
+def createDownloadsDir():
+    if not os.path.exists(DOWNLOADS):
+        os.makedirs(DOWNLOADS)    
+
 def checkFileExists(filename):
-    for file in os.listdir("/Users/trent/Developer/timer/downloads"):
+    for file in os.listdir(DOWNLOADS):
         if file == filename:
             return True
     return False
@@ -87,7 +92,7 @@ def queryData(genes):
     errors = []
     for gene in genes:
         try:
-            if checkFileExists(f"/Users/trent/Developer/timer/downloads/{gene}.csv"):
+            if checkFileExists(f"{DOWNLOADS}/{gene}.csv"):
                 continue
             timer(gene)
             renameFile(gene)
@@ -105,7 +110,7 @@ def combineDownloads(genes):
             gene_df = filterData(gene)
             dataframes.append(gene_df)
             concat_df = pd.concat(dataframes)
-            concat_df.to_csv("/Users/trent/Developer/timer/timer_output.csv")
+            concat_df.to_csv(f"{MAIN_DIR}/timer_output.csv")
             print(f"{gene} success")
         except FileNotFoundError as error:
             errors.append(gene)
@@ -113,9 +118,11 @@ def combineDownloads(genes):
     return errors
 
 def main():
-    filename = "/Users/trent/Developer/timer/timerGenes.txt"
+    filename = f"{MAIN_DIR}/timerGenes.txt"
     genes = importFile(filename)
     errors = [] #define errors so can combine downloads without querying and won't error
+    createDownloadsDir()
+
     errors = queryData(genes)
     errors.extend(combineDownloads(genes))
     writeErrors(errors)

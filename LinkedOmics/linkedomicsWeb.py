@@ -12,8 +12,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 #DIRECTORIES
-MAIN_DIR = "/Users/trent/Developer/Genetic-Screening-Web-Automation/LinkedOmics"
-DOWNLOADS = "/Users/trent/Developer/tcgabiolinks/downloads"
+MAIN_DIR = os.path.dirname(os.path.realpath(__file__))
+DOWNLOADS = MAIN_DIR + "/downloads" 
 DOWNLOAD_DIR = str(Path.home() / "Downloads") 
 ERROR = 5
 
@@ -288,10 +288,12 @@ def formatData(value):
 def main():
     genes = importFile(f"{MAIN_DIR}/linkedomicsGenes.txt")
     errors = [] #define errors so can combine downloads without querying and won't error
+    createDownloadsDir()
+
     # errors = queryData(genes)
     errors.extend(combineDownloads(genes))
     countGenes("Gene").to_csv(f"{MAIN_DIR}/linkedomics_counts.csv") #Output a count file
-
+    
     formatData("P Value")
     formatData("Description")
     writeErrors(errors)

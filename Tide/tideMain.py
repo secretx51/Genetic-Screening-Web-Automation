@@ -7,7 +7,7 @@ from tideQuery import RegisterTide
 from tideQuery import QueryTide
 
 #DIRECTORIES - DO NOT CHANGE
-MAIN_DIR = os.getcwd()
+MAIN_DIR = os.path.dirname(os.path.realpath(__file__))
 DOWNLOADS = MAIN_DIR + "/downloads" 
 DOWNLOAD_DIR = str(Path.home() / "Downloads") 
 # CHANGEME for different dataset filtering
@@ -86,6 +86,7 @@ def main():
     genes = importFile(f"{MAIN_DIR}/tideGenes.txt")
     errors = [] #define errors so can combine downloads without querying and won't error
     createDownloadsDir()
+    
     errors = queryData(genes)
     errors.extend(combineDownloads(genes))
     writeErrors(errors)

@@ -5,7 +5,7 @@ import gepia as gp
 import pandas as pd
 
 # DO NOT CHANGE MAIN_DIR
-MAIN_DIR = os.getcwd()
+MAIN_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class Gepia():
     def __init__(self, input_filename: str, output_dir: str, cancer: str):
