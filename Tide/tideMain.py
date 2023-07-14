@@ -15,6 +15,7 @@ COLUMNS = ['Gene', "GSE26712@PRECOG", "GSE13876@PRECOG", "GSE3149@PRECOG",
             "GSE9899@PRECOG", "GSE17260@PRECOG", 
             "GSE17260", "GSE49997", "GSE32062", "GSE26712", 
             'TCGA1', 'TCGA2','CAF FAP', 'MDSC', 'TAM M2']
+EXCLUSION = True
 
 def createDownloadsDir():
     if not os.path.exists(DOWNLOADS):
@@ -70,14 +71,14 @@ def combineDownloads(genes):
     errors = []
     for gene in genes:
         try:
-            dataframes.append(FilerTide(DOWNLOADS, gene).filterData())
+            dataframes.append(FilerTide(DOWNLOADS, gene, EXCLUSION).filterData())
             concat_df = pd.concat(dataframes, ignore_index=True)
             concat_df.to_csv(f"{MAIN_DIR}/tide_output.csv", index=False)
             print(f"{gene} success combine")
         except FileNotFoundError as error:
             errors.append(gene)
             print(f"{gene} failed combine because: \n {error}")
-    FormatTide(f"{MAIN_DIR}/tide_output.csv", COLUMNS).formatTide()\
+    FormatTide(f"{MAIN_DIR}/tide_output.csv", COLUMNS, EXCLUSION).formatTide()\
         .to_csv(f"{MAIN_DIR}/tide_output_formatted.csv")
     return errors
 

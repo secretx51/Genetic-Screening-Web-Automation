@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 
 class FilerTide():
-    def __init__(self, downloads, gene) -> None:
+    def __init__(self, downloads: str, gene: str, exclusion: bool) -> None:
         self._downloads = downloads
         self._gene = gene
+        self._exclusion = exclusion
 
     def _filterRows(self, df):
         ovarian_df = df[df.iloc[:, 1] == "Ovarian"]
@@ -21,11 +22,15 @@ class FilerTide():
     
     def _tryAddExclusion(self, df):
         try:
+            if self._exclusion:
+                raise EnvironmentError("Exclusion data not wanted.")
             exclusion_df = pd.read_csv(f"{self._downloads}/{self._gene}_exclusion.csv")
             return_df = pd.concat([df, exclusion_df], axis=1, ignore_index=True)
             return return_df
         except FileNotFoundError as error:
             print(f"Cannot Find Exclusion File \n {error}")
+            return df
+        except EnvironmentError:
             return df
 
     def filterData(self):
@@ -35,9 +40,10 @@ class FilerTide():
         return self._tryAddExclusion(column_df)
 
 class FormatTide():
-    def __init__(self, filename, columns) -> None:
+    def __init__(self, filename, columns, exclusion: bool) -> None:
         self._filename = filename
         self._columns = columns
+        self._exclusion = exclusion
         self.Tcga1 = True
         self.genes = []
         self.complete_rows = []
@@ -73,7 +79,7 @@ class FormatTide():
         for index, column in enumerate(self._columns):
             if cohort == column:
                 self.current_row[index] = row['T Dysfunction'] 
-            elif row['Condition'] == column:
+            elif self._exclusion and row['Condition'] == column:
                 self.current_row[index] = row['Z score']
 
     def formatTide(self):
