@@ -7,9 +7,7 @@ __pycache__/
 .DS_Store
 
 #Output Files
-tide_output_formatted.csv
-tide_output.csv
-tideErrors.txt
+Results/
 
 # C extensions
 *.so

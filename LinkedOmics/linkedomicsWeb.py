@@ -12,8 +12,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 #DIRECTORIES
-MAIN_DIR = os.getcwd()
-DOWNLOADS = MAIN_DIR + "/downloads"
+MAIN_DIR = "/Users/trent/Developer/Genetic-Screening-Web-Automation/LinkedOmics"
+DOWNLOADS = "/Users/trent/Developer/tcgabiolinks/downloads"
 DOWNLOAD_DIR = str(Path.home() / "Downloads") 
 ERROR = 5
 
@@ -223,7 +223,7 @@ def combineDownloads(genes):
     errors = []
     for gene in genes:
         try:
-            terms = importFile(f"{MAIN_DIR}/go/saved_GO_terms.txt") #Import saved terms
+            terms = importFile(f"{MAIN_DIR}/GeneOntology/output_GO_terms.txt") #Import saved terms
             gene_df = filterData(gene, terms) #filter the db
             dataframes.append(gene_df) #append to the dataframe list
             concat_df = pd.concat(dataframes, ignore_index=True) #concat all dataframes in list
@@ -288,7 +288,7 @@ def formatData(value):
 def main():
     genes = importFile(f"{MAIN_DIR}/linkedomicsGenes.txt")
     errors = [] #define errors so can combine downloads without querying and won't error
-    errors = queryData(genes)
+    # errors = queryData(genes)
     errors.extend(combineDownloads(genes))
     countGenes("Gene").to_csv(f"{MAIN_DIR}/linkedomics_counts.csv") #Output a count file
 
