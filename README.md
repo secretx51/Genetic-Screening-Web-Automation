@@ -184,7 +184,32 @@ Ovarian expression: "GSE26712@PRECOG", "GSE13876@PRECOG", "GSE3149@PRECOG", "GSE
 TCGA that is split into arbitrary "TCGA1" and "TCGA2" <br />
 Ovary Expression: "GSE17260", "GSE49997", "GSE32062", "GSE26712" <br />
 Exclusion: 'CAF FAP', 'MDSC', 'TAM M2' <br />
-These datasets can be changed by entering the exact name of desired dataset in a comma separated fashion into the text file 'tideCohorts.txt'.
+These datasets can be changed by entering the exact name of desired dataset in a comma separated fashion into the text file 'tideCohorts.txt'. <br />
+Please note if you want to use different cancer types to ovarian or ovary you must update 'tideCohorts.txt'. When entering custom cohorts in Tide csv must also include the subtype in the name, for example instead of just TCGA if want metastatic subtype of TCGA enter: 'TCGA Metastatic'. You can find these cohort names and subtypes in any gene expression data csv downloaded from Tide.
+
+```sh
+Gets Tide T_Dysfunction from expression and exclusion data
+
+options:
+  -h, --help            show this help message and exit
+  -o OUTDIR, --outdir OUTDIR
+                        Directory to where outputted files and csv download files should be stored Default is
+                        /Your/Path/To/Python/File
+  -d DOWNLOADS, --downloads DOWNLOADS
+                        Change specifically where the csv files are downloaded to. Default is
+                        /Your/Path/To/Python/File + "/Downloads" - will create folder if doesn't exist.
+  -c  [ ...], --cancer  [ ...]
+                        Cancer type to run Tide on. Default is: ['Ovarian', 'Ovary']. Valid cancer types are:
+                        Head Neck, Colorectal, Lung, Melanoma, Lymphoma, Ovary, Leukemia, Breast,
+                        Glioblastoma, Myeloma, Sarcoma, Liver, Bladder, Brain, Ovarian, Esophageal, Kidney
+  -q, --query           Do NOT query Tide just combine and format downloaded genes.
+  -e, --exclusion       Do NOT download or format exclusion values from Tide.
+```
+
+Example to run tide with the following options: no exclusion data, no searching the web only looking for csv in downloads and will run on ovarian and melanoma cancer types:
+```sh
+python tideMain.py -e -q -c 'Melanoma' -c 'Ovarian'
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

@@ -148,7 +148,7 @@ def argParser(main_dir, downloads):
                     "Breast", "Glioblastoma", "Myeloma", "Sarcoma", "Liver", "Bladder", "Brain",	
                     "Ovarian", "Esophageal", "Kidney"]
     parser.add_argument("-c", "--cancer", choices=cancer_types, default=['Ovarian', 'Ovary'], 
-                        nargs='+', help="Cancer type to run Tide on. Default is: ['Ovarian', 'Ovary']." 
+                        action='append', help="Cancer type to run Tide on. Default is: ['Ovarian', 'Ovary']." 
                         + '\nValid cancer types are: '+', '.join(cancer_types), metavar='')
     
     parser.add_argument("-q", "--query", action='store_false', 
