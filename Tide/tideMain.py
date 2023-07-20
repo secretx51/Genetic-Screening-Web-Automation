@@ -87,7 +87,7 @@ class TideQuery(TideUtilities):
 class TideFormat(TideUtilities):
     def __init__(self, main_dir, download_dir, downloads, exclusion, genes, cancers) -> None:
         super().__init__(main_dir, download_dir, downloads, exclusion, genes)
-        self.cancer = cancers
+        self.cancers = cancers
         self.dataframes = []
         self.errors = []
 
@@ -95,7 +95,7 @@ class TideFormat(TideUtilities):
         for gene in self.genes:
             try:
                 self.dataframes.append(
-                    FilerTide(self.downloads, gene, self.exclusion, self.cancer).filterData())
+                    FilerTide(self.downloads, gene, self.exclusion, self.cancers).filterData())
                 concat_df = pd.concat(self.dataframes, ignore_index=True)
                 concat_df.to_csv(f"{self.main_dir}/tide_output.csv", index=False)
                 print(f"{gene} success combine")
@@ -107,8 +107,9 @@ class TideFormat(TideUtilities):
         self.combineDownloads()
 
         columns = self.importFile(f"{self.main_dir}/tideCohorts.txt")
-        FormatTide(f"{self.main_dir}/tide_output.csv", columns, self.exclusion).formatTide()\
-            .to_csv(f"{self.main_dir}/tide_output_formatted.csv", index=False)
+        FormatTide(f"{self.main_dir}/tide_output.csv", 
+                   columns, self.exclusion).formatTide()\
+                    .to_csv(f"{self.main_dir}/tide_output_formatted.csv", index=False)
         
         return self.errors
 
@@ -136,7 +137,8 @@ def argParser(main_dir, downloads):
         description='Gets Tide T_Dysfunction from expression and exclusion data')
 
     parser.add_argument("-o", "--outdir", default=main_dir, 
-                        help="Directory to where outputted files and csv download files should be stored" + f"\nDefault is {main_dir}")
+                        help="Directory to where outputted files and csv download files should be stored" 
+                        + f"\nDefault is {main_dir}")
     
     parser.add_argument("-d", "--downloads", default=downloads, 
                         help="Change specifically where the csv files are downloaded to." 
@@ -146,7 +148,8 @@ def argParser(main_dir, downloads):
                     "Breast", "Glioblastoma", "Myeloma", "Sarcoma", "Liver", "Bladder", "Brain",	
                     "Ovarian", "Esophageal", "Kidney"]
     parser.add_argument("-c", "--cancer", choices=cancer_types, default=['Ovarian', 'Ovary'], 
-                        nargs='+', help="Cancer type to run Tide on. Default is: ['Ovarian', 'Ovary'].")
+                        nargs='+', help="Cancer type to run Tide on. Default is: ['Ovarian', 'Ovary']." 
+                        + '\nValid cancer types are: '+', '.join(cancer_types), metavar='')
     
     parser.add_argument("-q", "--query", action='store_false', 
                         help="Do NOT query Tide just combine and format downloaded genes.")
@@ -161,9 +164,9 @@ def main():
     DOWNLOADS = MAIN_DIR + "/Downloads"
     DOWNLOAD_DIR = str(Path.home() / "Downloads") #System downloads path.
 
-    parser = argParser(MAIN_DIR, DOWNLOADS)
-    Tide(parser.outdir, DOWNLOAD_DIR, parser.downloads, 
-         parser.exclusion, parser.query, parser.cancer).tideMain()
+    args = argParser(MAIN_DIR, DOWNLOADS)
+    Tide(args.outdir, DOWNLOAD_DIR, args.downloads, 
+         args.exclusion, args.query, args.cancer).tideMain()
 
 if __name__ == "__main__":
    main()

@@ -110,12 +110,12 @@ class FormatTide():
 
     def _getValues(self, cohort, row):
         for index, column in enumerate(self._columns):
-            if cohort.split()[0] == column: #Split the whitespace to remove subtype
+            if cohort == column: #Split the whitespace to remove subtype
                 self.current_row[index] = row['T Dysfunction'] 
             elif self._exclusion and row['Condition'] == column:
                 self.current_row[index] = row['Z score']
 
-    def _outputDf(self):
+    def _correctArraySize(self):
         #Drop the difference from the right for every row in array
         for i, row in enumerate(self.complete_rows): #Index each array in list
             #If len of row greater than column length
@@ -123,8 +123,20 @@ class FormatTide():
                 #Go into row and take up to the length of wanted row
                 self.complete_rows[i] = self.complete_rows[i][:len(self._columns)] 
 
+    def _mergeTCGA(self, df):
+        # Merge values from Column1 into Column2, but only overwrite if the value is empty in Column2
+        df['TCGA1'] = df['TCGA1'].fillna(df['TCGA2']) 
+        # If the number of Na
+        tcga2_na = df['TCGA2'].isna().sum()
+        if len(df['TCGA1']) / 1.1 < 2 * tcga2_na * 1.1:
+            df = df.drop('TCGA2', axis=1)
+        return df
+
+    def _outputDf(self):
         output_df = pd.DataFrame(self.complete_rows, columns=self._columns)
-        output_df.replace(to_replace = 0, value = '', inplace=True)
+        output_df.replace(to_replace = 0, value = np.NaN, inplace=True)
+        output_df = self._mergeTCGA(output_df)
+        output_df.fillna('', inplace=True) #Replace remaining NaN
         return output_df
 
     def formatTide(self):
@@ -140,4 +152,5 @@ class FormatTide():
             self._getValues(cohort, row)
             self.genes.append(current_gene)
 
+        self._correctArraySize()
         return self._outputDf()
