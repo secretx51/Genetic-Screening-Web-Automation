@@ -126,8 +126,8 @@ class Tide():
 
     def tideMain(self):
         TideUtilities.createDownloadsDir(self.downloads)
-        # if self.query:
-        #     self.errors.extend(self.tideQuery.queryData())
+        if self.query:
+            self.errors.extend(self.tideQuery.queryData())
         self.errors.extend(self.tideFormat.downloadFormat())
         TideUtilities.writeErrors(f"{self.main_dir}/tideErrors.txt", self.errors)
         print("Success All Genes Formatted")
