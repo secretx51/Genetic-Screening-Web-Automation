@@ -20,8 +20,7 @@ class GepiaUtils():
         file.close()
         return string_list
     
-    @staticmethod
-    def writeErrors(errors: list, filename):
+    def writeErrors(self, errors: list, filename):
         with open(filename, 'w') as file:
                 file.truncate(0)
                 for error in errors:
@@ -30,16 +29,15 @@ class GepiaUtils():
         file.close()
 
 class Gepia(GepiaUtils):
-    def __init__(self, input_filename: str, output_dir: str, cancer: str):
-        self._cancer = cancer
-        self._input_filename = input_filename
+    def __init__(self, genes, output_dir: str, cancer: str):
+        self.genes = genes
         self._output_dir = output_dir
+        self._cancer = cancer
         self._survival = gp.survival()
 
     def _createDownloadsDir(self):
-        default_path = f"{MAIN_DIR}/results"
-        if self._output_dir == default_path and not os.path.exists(default_path):
-            os.makedirs(f"{MAIN_DIR}/results")    
+        if not os.path.exists(self._output_dir):
+            os.makedirs(self._output_dir)    
 
     def _setParams(self, survival):
         survival.setParam('dataset',[self._cancer])
@@ -61,12 +59,12 @@ class Gepia(GepiaUtils):
 
     def generatePDFs(self):
         self._createDownloadsDir()
-        gene_names = self.importFile(self._input_filename)
-        self._loopQuery(self._survival, gene_names)
-        self._getErrors(gene_names)
+        self._loopQuery(self._survival, self.genes)
+        self._getErrors(self.genes)
 
 class PDFExtractor():
-    def __init__(self, directory: str):
+    def __init__(self, genes, directory: str):
+        self.genes = genes
         self._directory = directory
 
     # Function to extract text from a PDF file
@@ -86,6 +84,9 @@ class PDFExtractor():
     def iteratePDF(self):
         files = os.listdir(self._directory)
         for filename in files:
+            gene_name = filename.split('/')[-1].split('_')[0] # Final Dir First Word
+            if gene_name not in self.genes: # If not in gene list skip
+                continue
             text = self._extract_text_from_pdf(self._directory + filename)
             self._writeText(text)
             
@@ -129,11 +130,12 @@ class TextExtract():
         df.to_csv(self._output_genes, index=False)
         
 class GepiaExpression(GepiaUtils):
-    def __init__(self, gene_input, data_output):
+    def __init__(self, genes, data_output):
+        self.genes = genes
         self._data_output = data_output
+        
         data = f"{MAIN_DIR}/data/gepiaOVExpressionData.csv"
         self.database = pd.read_csv(data, index_col='Gene Symbol')
-        self.genes = self.importFile(gene_input)
         self.errors = []
     
     def filterDatabaseGenes(self):
@@ -167,34 +169,38 @@ class GepiaExpression(GepiaUtils):
         self.reorderColumns()
         # Outputs
         self.database.to_csv(self._data_output)
-        self.writeErrors(self.errors, f"{MAIN_DIR}/gepiaExpressionErorrs.txt")
+        self.writeErrors(self.errors, f"{MAIN_DIR}/gepiaExpressionErrors.txt")
+        print("Expression data success, errors written.")
 
 def argParser():
     parser = argparse.ArgumentParser(
         description='Gets Logrank, HR(high), log2-Fold-Change from Gepia survival and expression data')
 
-    parser.add_argument("-o", "--outdir", default=f"{MAIN_DIR}/output", 
-                        help=f"Directory to where pdf graphs should be stored. Default is {MAIN_DIR}/output.")
+    parser.add_argument("-o", "--outdir", default=f"{MAIN_DIR}/downloads/", 
+                        help=f"Directory to where pdf graphs should be stored. Default is {MAIN_DIR}/downloads/.")
     parser.add_argument("-c", "--cancer", choices=gp.CANCERType, default='OV', 
                         help="Cancer type to run Gepia on. Default is: 'OV'." 
                         + '\nValid cancer types are: '+', '.join(gp.CANCERType), metavar='')
-    parser.add_argument("-e", "--expression", action='store_false', 
+    parser.add_argument("-g", "--gepia", action='store_false', 
+                        help="With this flag DO NOT search Gepia use files in downloads instead.")
+    parser.add_argument("-e", "--expression", action='store_true', 
                         help="Flag to generate expression data only, NO survival data.")
     
     return parser.parse_args()
 
 def main():
-    input_genes = f"{MAIN_DIR}/gepiaGenes.txt"
+    genes = GepiaUtils.importFile(f"{MAIN_DIR}/gepiaGenes.txt")
     output_genes = f"{MAIN_DIR}/gepia_output.csv"
     output_expression = f"{MAIN_DIR}/gepia_expression_output.csv"
     parser = argParser() #Namespace
     
-    GepiaExpression(input_genes, output_expression)
+    GepiaExpression(genes, output_expression).getExpression()
     if parser.expression: #Skip remaining code only generates expression data.
         return None
     
-    Gepia(input_genes, parser.outdir, parser.cancer).generatePDFs()
-    PDFExtractor(parser.outdir).iteratePDF()
+    if parser.gepia:
+        Gepia(genes, parser.outdir, parser.cancer).generatePDFs()
+    PDFExtractor(genes, parser.outdir).iteratePDF()
     TextExtract(output_genes).outputText()
 
 if __name__ == "__main__":

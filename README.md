@@ -134,10 +134,12 @@ Gets survival and expression data from Gepia for all the comma separated genes i
   options:
     -h, --help            show this help message and exit
     -o OUTDIR, --outdir OUTDIR
-                          Directory to where pdf graphs should be stored. Default is /path/to/file/
+                          Directory to where pdf graphs should be stored. Default is /Users/trent/Developer/Genetic-Screening-
+                          Web-Automation/Gepia/downloads/.
     -c , --cancer         Cancer type to run Gepia on. Default is: 'OV'. Valid cancer types are: ACC, BLCA, BRCA, CESC, CHOL,
                           COAD, DLBC, ESCA, GBM, HNSC, KICH, KIRC, KIRP, LAML, LGG, LIHC, LUAD, LUSC, MESO, OV, PAAD, PCPG,
                           PRAD, READ, SARC, SKCM, STAD, TGCT, THCA, THYM, UCEC, UCS
+    -g, --gepia           With this flag DO NOT search Gepia use files in downloads instead.
     -e, --expression      Flag to generate expression data only, NO survival data.
   ```
 Example to run python script with directory changed and BRCA cancer type:
