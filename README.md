@@ -127,20 +127,18 @@ General guide to running each tool:
 
 ### Gepia
 
-Gets survival data from Gepia for all the comma separated genes in 'gepiaGenes.txt'. Gepia is the only one of the online web automation tools that doesn't use selenium to parse webpages. This is because Gepia has a public python API that the program uses to generated the data. It generates the output in the form of pdf files that have an image of the survival plot. It then extracts all the text from the pdf files and filters for HR(high) and logranks which it stores in a csv alongside the respective gene name. <br />
+Gets survival and expression data from Gepia for all the comma separated genes in 'gepiaGenes.txt'. Gepia is the only one of the online web automation tools that doesn't use selenium to parse webpages. This is because Gepia has a public python API that the program uses to generated the data. It generates the output in the form of pdf files that have an image of the survival plot. It then extracts all the text from the pdf files and filters for HR(high) and logranks which it stores in a csv alongside the respective gene name. For the expression data it searches a database downloaded from the Gepia website and cleans the data to a new csv file. <br />
   ```sh
-  Gets Logrank and HR(high) from Gepia survival data
+  Gets Logrank, HR(high), log2-Fold-Change from Gepia survival and expression data
+
   options:
     -h, --help            show this help message and exit
-
-    -o, --outdir          Directory to where pdf graphs should be stored. 
-                          Default is: /python-file-directory/output
-
-    -c , --cancer         Cancer type to run Gepia on. 
-                          Default is: 'OV'.
-                          Choices are: ACC,BLCA,BRCA,CESC,CHOL,COAD,DLBC,ESCA,GBM,HNSC,KICH,KIRC,KIRP,
-                          LAML,LGG,LIHC,LUAD,LUSC,MESO,OV,PAAD,PCPG,PRAD,READ,SARC,SKCM,STAD,TGCT,THCA,
-                          THYM,UCEC,UCS
+    -o OUTDIR, --outdir OUTDIR
+                          Directory to where pdf graphs should be stored. Default is /path/to/file/
+    -c , --cancer         Cancer type to run Gepia on. Default is: 'OV'. Valid cancer types are: ACC, BLCA, BRCA, CESC, CHOL,
+                          COAD, DLBC, ESCA, GBM, HNSC, KICH, KIRC, KIRP, LAML, LGG, LIHC, LUAD, LUSC, MESO, OV, PAAD, PCPG,
+                          PRAD, READ, SARC, SKCM, STAD, TGCT, THCA, THYM, UCEC, UCS
+    -e, --expression      Flag to generate expression data only, NO survival data.
   ```
 Example to run python script with directory changed and BRCA cancer type:
   ```sh
