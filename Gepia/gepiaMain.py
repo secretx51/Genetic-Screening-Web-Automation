@@ -8,14 +8,9 @@ from pathlib import Path
 # DO NOT CHANGE MAIN_DIR
 MAIN_DIR = str(Path(__file__).resolve().parent)
 
-class Gepia():
-    def __init__(self, input_filename: str, output_dir: str, cancer: str):
-        self._cancer = cancer
-        self._input_filename = input_filename
-        self._output_dir = output_dir
-        self._survival = gp.survival()
-
-    def _importFile(self, filename):
+class GepiaUtils():
+    @staticmethod
+    def importFile(filename):
         with open(filename, 'r') as file:
             data = file.read()
         # Split the data based on commas and store the strings in a list
@@ -24,6 +19,22 @@ class Gepia():
         file.close()
         return string_list
     
+    @staticmethod
+    def writeErrors(errors: list, filename):
+        with open(filename, 'w') as file:
+                file.truncate(0)
+                for error in errors:
+                    error_format = error.split('.')[0]
+                    file.write(f'{error_format},')
+        file.close()
+
+class Gepia(GepiaUtils):
+    def __init__(self, input_filename: str, output_dir: str, cancer: str):
+        self._cancer = cancer
+        self._input_filename = input_filename
+        self._output_dir = output_dir
+        self._survival = gp.survival()
+
     def _createDownloadsDir(self):
         default_path = f"{MAIN_DIR}/results"
         if self._output_dir == default_path and not os.path.exists(default_path):
@@ -41,26 +52,15 @@ class Gepia():
             survival.setParam('signature', gene)
             survival.query()
 
-    def _writeErrors(self, errors: list):
-        with open(f"{MAIN_DIR}/gepiaErrors.txt", 'w') as file:
-                file.truncate(0)
-                for error in errors:
-                    error_format = error.split('.')[0]
-                    file.write(f'{error_format},')
-        file.close()
-
     def _getErrors(self, genes):
-        errors = []
         get_gene = lambda filename: str(filename).split('_')[0]
         success_genes = list(map(get_gene, os.listdir(self._output_dir)))
-        for gene in genes:
-            if gene not in success_genes:
-                errors.append(gene)
-        self._writeErrors(errors)
+        errors = [gene for gene in genes if gene not in success_genes]
+        self.writeErrors(errors, f"{MAIN_DIR}/gepiaErrors.txt")
 
     def generatePDFs(self):
         self._createDownloadsDir()
-        gene_names = self._importFile(self._input_filename)
+        gene_names = self.importFile(self._input_filename)
         self._loopQuery(self._survival, gene_names)
         self._getErrors(gene_names)
 
@@ -72,9 +72,7 @@ class PDFExtractor():
     def _extract_text_from_pdf(self, file_path):
         with open(file_path, 'rb') as file:
             reader = PyPDF2.PdfReader(file)
-            text = ''
-            for page in reader.pages:
-                text += page.extract_text()
+            text = ''.join(page.extract_text() for page in reader.pages)
         file.close()
         return text
     
@@ -149,4 +147,4 @@ def main():
     TextExtract(output_genes).outputText()
 
 if __name__ == "__main__":
-   main()
+    main()
