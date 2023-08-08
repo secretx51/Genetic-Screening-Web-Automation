@@ -108,7 +108,7 @@ class TideFormat(TideUtilities):
 
         columns = self.importFile(f"{self.main_dir}/tideCohorts.txt")
         FormatTide(f"{self.main_dir}/tide_output.csv", 
-                   columns, self.exclusion).formatTide()\
+                    columns, self.exclusion).formatTide()\
                     .to_csv(f"{self.main_dir}/tide_output_formatted.csv", index=False)
         
         return self.errors
@@ -161,12 +161,12 @@ def argParser(main_dir, downloads):
 
 def main():
     MAIN_DIR = str(Path(__file__).resolve().parent) #Directory of python script
-    DOWNLOADS = MAIN_DIR + "/Downloads"
+    DOWNLOADS = f"{MAIN_DIR}/Downloads"
     DOWNLOAD_DIR = str(Path.home() / "Downloads") #System downloads path.
 
     args = argParser(MAIN_DIR, DOWNLOADS)
     Tide(args.outdir, DOWNLOAD_DIR, args.downloads, 
-         args.exclusion, args.query, args.cancer).tideMain()
+        args.exclusion, args.query, args.cancer).tideMain()
 
 if __name__ == "__main__":
-   main()
+    main()

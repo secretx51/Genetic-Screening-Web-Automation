@@ -1,7 +1,7 @@
-import os
 import pandas as pd
+from pathlib import Path
 
-MAIN_DIR = os.getcwd()
+MAIN_DIR = str(Path(__file__).resolve().parent) #Directory of python script
 
 def importFile(filename):
     with open(filename, 'r') as file:
@@ -12,30 +12,34 @@ def importFile(filename):
     file.close()
     return string_list
 
-def filterGenome(target):
-    saved_genes = []
-    df = pd.read_excel(f"{MAIN_DIR}/data/Homo_sapiens.xlsx")
+def getGenes(data_filename):
+    df = pd.read_excel(data_filename)
     str_df = df.astype(str)
-    genes = str_df.loc(axis=1)["Symbol"]
-    for gene in genes:
-        if gene.find(target) == 0:
-            saved_genes.append(gene)
+    return str_df.loc(axis=1)["Symbol"] #All Genes
+
+def filterGenome(genes, target):
+    saved_genes = [gene for gene in genes if gene.find(target) == 0]
     print(f"{target} Genes Filtered")
     return saved_genes
 
-def concatGenome(terms):
-    dfs = []
-    for term in terms:
-        dfs.append(filterGenome(term))
-    return pd.concat(dfs)
+def concatGenome(data_filename, terms):
+    genes = getGenes(data_filename)
+    return [filterGenome(genes, term) for term in terms]
+
+def writeGenes(filename, gene_names: list):
+    with open(filename, 'w') as file:
+            file.truncate(0)
+            for genes in gene_names:
+                for gene in genes:
+                    file.write(f'{gene},')
+    file.close()
 
 def main():
     terms = importFile(f"{MAIN_DIR}/genomeSearchTerms.txt")
-    concat_df = concatGenome(terms)
-    concat_df.to_csv(f"{MAIN_DIR}/microRNAs_genes.csv", index=False)
+    gene_names = concatGenome(f"{MAIN_DIR}/ncbi-data/Homo_sapiens.xlsx", terms)
+    writeGenes(f"{MAIN_DIR}/genome_output.txt", gene_names)
     print("Success file outputted")
 
 if __name__ == "__main__":
     main()
 # end main
-    

@@ -126,7 +126,7 @@ class TextExtract():
         lines = self._importLines()
         values = self._filterText(lines)
         lists_of_3 = [values[i:i+3] for i in range(0, len(values), 3)]
-        df = pd.DataFrame(lists_of_3 ,columns=['Gene', 'HR', 'LogRank'])
+        df = pd.DataFrame(lists_of_3 ,columns=['Gene', 'LogRank', 'HR'])
         df.to_csv(self._output_genes, index=False)
         
 class GepiaExpression(GepiaUtils):
